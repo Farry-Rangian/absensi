@@ -63,7 +63,8 @@ class AbsensiController extends Controller
         $codeMatch = $codes->where('code', $input)->first();
 
         // Jika kode cocok dan belum digunakan, dapatkan id-nya
-        if ($codeMatch && is_null($codeMatch->id_user_get)) {
+        if ($input == $codeMatch->code && (empty($codeMatch->id_user_get))) {
+            if($codeMatch->user_id != $user->user_id) {
                 $codeMatch->id_user_get = $user->id;
                 $code_id = $codeMatch->id;
                 $kelas_id = $request->kelas_id;
@@ -73,24 +74,22 @@ class AbsensiController extends Controller
                 $tanggal = $date->toDateString();
                 $start = $date->toTimeString();
                 $codeMatch->save();
+
+                $absensi = new Absensi;
+                $absensi->kelas_id = $kelas_id;
+                $absensi->materi_id = $materi_id;
+                $absensi->teaching_role = $teaching_role;
+                $absensi->code_id = $code_id;
+                $absensi->user_id = $user_id;
+                $absensi->date = $tanggal;
+                $absensi->start = $start;
+                $absensi->save();
+                return redirect()->back()->with('success', 'Anda berhasil melakukan absensi.');
+            }
             } else {
                 // Code tidak valid: sudah digunakan atau tidak ditemukan
                 return back()->withErrors(['code' => 'Kode absen tidak valid.'])->withInput();
-                Log::error();
             }
-
-        $absensi = new Absensi;
-        $absensi->kelas_id = $kelas_id;
-        $absensi->materi_id = $materi_id;
-        $absensi->teaching_role = $teaching_role;
-        $absensi->code_id = $code_id;
-        $absensi->user_id = $user_id;
-        $absensi->date = $tanggal;
-        $absensi->start = $start;
-        $absensi->save();
-        // dd($absensi);
-        return redirect()->back()->with('success', 'Anda berhasil melakukan absensi.');
-        
 
     }
 

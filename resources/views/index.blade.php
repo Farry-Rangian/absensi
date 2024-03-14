@@ -48,7 +48,7 @@
                             <h5 class="card-title">Form Absensi</h5>
                         </div>
                         <div class="container">
-                            <form method="POST" id="absensiForm" action="{{ route('home.store') }}" enctype="multipart/form-data">
+                            <form method="POST" id="formAbsensi" action="{{ route('home.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <div class="form-group">
@@ -104,7 +104,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary" onclick="tombolDua()">
+                                <button type="submit" class="btn btn-primary">
                                     Clock in
                                 </button>
                                 <hr>
@@ -153,31 +153,6 @@
         });
     }
 
-    function tombolDua() {
-        var formData = new FormData($('#absensiForm')[0]);
-        axios.post("{{ route('home.store') }}", formData)
-        .then(function(response) {
-            // Display success message
-            swal({
-                title: "Berhasil!",
-                text: response.data.message,
-                icon: "success",
-                button: true
-            });
-        })
-        .catch(function(error) {
-        // Handle any errors
-        console.error(error);
-        // Display error message
-        swal({
-            title: "Oops!",
-            text: error.response.data.message,
-            icon: "error",
-            button: true
-        });
-    });
-}
-
     function currentTime() {
         var date = new Date(); /* creating object of Date class */
         var hour = date.getHours();
@@ -212,6 +187,40 @@
             return k;
         }
     }
+
+    $(document).ready(function() {
+    // Memanggil currentTime() saat halaman dimuat
+    currentTime();
+
+    // Menangani submit form saat tombol "Clock in" ditekan
+    $('#formAbsensi').submit(function(event) {
+        // Mencegah aksi default form (pengiriman form langsung)
+        event.preventDefault();
+
+        // Lakukan AJAX untuk menyimpan data absensi ke database
+        $.ajax({
+            url: "{{ route('home.store') }}",
+            type: 'POST',
+            data: $(this).serialize(), // Menggunakan serialize untuk mengambil data formulir
+            success: function(response) {
+                // Jika respons berhasil, tampilkan pesan sukses sebagai alert
+                alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                // Jika respons gagal, cek pesan error dari respons JSON
+                var jsonResponse = xhr.responseJSON;
+                if (jsonResponse && jsonResponse.message) {
+                    // Jika pesan error tersedia dalam respons JSON, gunakan pesan tersebut
+                    alert('Error - ' + jsonResponse.message);
+                } else {
+                    // Jika tidak ada pesan error yang tersedia, tampilkan pesan default
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                }
+            }
+        });
+    });
+});
 </script>
 
 @endsection

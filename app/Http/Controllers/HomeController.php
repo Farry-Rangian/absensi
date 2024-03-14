@@ -37,45 +37,48 @@ class HomeController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $this->validate($request, [
-            'kelas_id' => 'required',
-            'materi_id'=> 'required',
-            'teaching_role' => 'required',
-            'code' => 'required',
-        ]);
-        
-        $user = Auth::user();
-        $date = Carbon::now("GMT+7");
-        $codes = Code::all();
+{
+    $this->validate($request, [
+        'kelas_id' => 'required',
+        'materi_id' => 'required',
+        'teaching_role' => 'required',
+        'code' => 'required',
+    ]);
+    
+    $user = Auth::user();
+    $date = Carbon::now("GMT+7");
+    $codes = Code::all();
 
-        $input = $request->input('code');
-        $codeMatch = $codes->where('code', $input)->first();
-        // dd($codeMatch->code, $input);
+    $input = $request->input('code');
+    $codeMatch = $codes->where('code', $input)->first();
 
-        if ($codeMatch && $codeMatch->code == $input && is_null($codeMatch->id_user_get)) {
-                $codeMatch->id_user_get = $user->id;
-                $code_id = $codeMatch->id;
-                $kelas_id = $request->kelas_id;
-                $materi_id = $request->materi_id;
-                $teaching_role = $request->teaching_role;
-                $user_id = $user->id;
-                $tanggal = $date->toDateString();
-                $start = $date->toTimeString();
-                $codeMatch->save();
+    if ($codeMatch && $input == $codeMatch->code && empty($codeMatch->id_user_get)) {
+        if ($codeMatch->user_id != $user->user_id) {
+            $codeMatch->id_user_get = $user->id;
+            $code_id = $codeMatch->id;
+            $kelas_id = $request->kelas_id;
+            $materi_id = $request->materi_id;
+            $teaching_role = $request->teaching_role;
+            $user_id = $user->id;
+            $tanggal = $date->toDateString();
+            $start = $date->toTimeString();
+            $codeMatch->save();
 
-                $absensi = new Absensi;
-                $absensi->kelas_id = $kelas_id;
-                $absensi->materi_id = $materi_id;
-                $absensi->teaching_role = $teaching_role;
-                $absensi->code_id = $code_id;
-                $absensi->user_id = $user_id;
-                $absensi->date = $tanggal;
-                $absensi->start = $start;
-                $absensi->save();
-                return response()->json(['message' => 'Data berhasil disimpan.']);
-        } else {
-            return response()->json(['message' => 'Terjadi kesalahan saat menyimpan data.'], 400);
+            $absensi = new Absensi;
+            $absensi->kelas_id = $kelas_id;
+            $absensi->materi_id = $materi_id;
+            $absensi->teaching_role = $teaching_role;
+            $absensi->code_id = $code_id;
+            $absensi->user_id = $user_id;
+            $absensi->date = $tanggal;
+            $absensi->start = $start;
+            $absensi->save();
+            return response()->json(['message' => 'Data berhasil disimpan.']);
         }
+    } else {
+        // Code tidak valid: sudah digunakan, tidak ditemukan, atau tidak ada
+        return response()->json(['message' => 'Code invalid']);
     }
+}
+
 }
