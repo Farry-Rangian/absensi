@@ -25,6 +25,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::post('/home', [App\Http\Controllers\HomeController::class, 'store'])->name('home.store');
 Route::resource('code', CodeController::class);
 Route::resource('kelas', KelasController::class);
 Route::resource('materi', MateriController::class);
