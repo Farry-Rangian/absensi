@@ -44,35 +44,6 @@
     }
     
 </script>
-{{-- function tombol() {
-    $.ajax({
-        type: "POST",
-        url: "{{ route('absensi.store') }}",
-        data: {_token: "{{ csrf_token() }}"},
-        success: function(response) {
-            // Tampilkan SweetAlert dengan kode yang berhasil dibuat
-            swal({
-                title: "Berhasil!",
-                text: "Absen berhasil",
-                icon: "success",
-                button: true
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-            // Tampilkan SweetAlert jika terjadi kesalahan
-            swal({
-                title: "Oops!",
-                text: "Kode Absen Invalid",
-                icon: "error",
-                button: true
-            });
-        }
-    });
-}
-
-</script> --}}
-<!-- /.container-fluid -->
 <div>
 </div>
 @endsection

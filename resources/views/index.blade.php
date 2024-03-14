@@ -14,6 +14,11 @@
             <div class="card">
                 <div class="card-header">
                     <h1 class="card-title">Selamat Datang {{ $user->name }}</h1>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault();
+                    document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        {{ __('Logout') }}
+                    </a>
                 </div>
                 <div class="digital_clock_wrapper p-3">
                     <div id="digit_clock_time" class="h2 text-center"></div>
@@ -43,11 +48,11 @@
                             <h5 class="card-title">Form Absensi</h5>
                         </div>
                         <div class="container">
-                            <form method="POST" enctype="multipart/form-data">
+                            <form method="POST" id="absensiForm" action="{{ route('home.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <div class="form-group">
-                                        <label for="id_assisten">ID ASSISTEN : {{ $user->id_assisten }}</label>
+                                        <h4 class="pt-3">ID ASSISTEN : {{ $user->id_assisten }}</h4>
                                         <input class="form-control" type="text" value="{{ $user->id }}" hidden>
                                         @error('code_id')
                                             <span class="invalid-feedback" role="alert">
@@ -149,38 +154,29 @@
     }
 
     function tombolDua() {
-    var kelas_id = document.getElementById('kelas_id').value;
-    var materi_id = document.getElementById('materi_id').value;
-    var teaching_role = document.getElementById('teaching_role').value;
-    var code = document.getElementById('code').value;
-
-    // Mengirim permintaan POST menggunakan Axios
-    axios.post("{{ route('home.store') }}", {
-            _token: "{{ csrf_token() }}", // Menambahkan nilai kode absen ke dalam payload data
-            kelas_id: kelas_id,
-            materi_id: materi_id,
-            teaching_role: teaching_role,
-            code: code
-        })
+        var formData = new FormData($('#absensiForm')[0]);
+        axios.post("{{ route('home.store') }}", formData)
         .then(function(response) {
-            // Menangani respons jika berhasil
+            // Display success message
             swal({
                 title: "Berhasil!",
-                text: "Absen berhasil",
+                text: response.data.message,
                 icon: "success",
                 button: true
             });
         })
         .catch(function(error) {
-            console.error(error);
-            swal({
-                title: "Oops!",
-                text: "Kode Absen Invalid",
-                icon: "error",
-                button: true
-            });
-        });   
-    }
+        // Handle any errors
+        console.error(error);
+        // Display error message
+        swal({
+            title: "Oops!",
+            text: error.response.data.message,
+            icon: "error",
+            button: true
+        });
+    });
+}
 
     function currentTime() {
         var date = new Date(); /* creating object of Date class */

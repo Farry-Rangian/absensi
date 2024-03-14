@@ -14,8 +14,8 @@ class MateriController extends Controller
      */
     public function index()
     {
-        $materi = Materi::latest()->paginate(10);
-        return view('materi.index', compact('materi'));
+        $materis = Materi::latest()->paginate(10);
+        return view('materi.index', compact('materis'));
     }
 
     /**
@@ -37,9 +37,8 @@ class MateriController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'nama_materi'     => 'required'
+            'nama_materi' => 'required'
         ]);
-
         $materi = Materi::create([
             'nama_materi' => $request->nama_materi
         ]);
@@ -84,7 +83,24 @@ class MateriController extends Controller
      */
     public function update(Request $request, Materi $materi)
     {
-        //
+        $this->validate($request, [
+            'nama_materi'     => 'required'
+        ]);
+
+        //get data Kelas by ID
+        $materi = Materi::findOrFail($materi->id);
+
+        $materi ->update([
+            'nama_materi' => $request->nama_materi
+        ]);
+
+        if($materi){
+            //redirect dengan pesan sukses
+            return redirect()->route('materi.index')->with(['success' => 'Data Berhasil Diupdate!']);
+        }else{
+            //redirect dengan pesan error
+            return redirect()->route('materi.index')->with(['error' => 'Data Gagal Diupdate!']);
+        }
     }
 
     /**
@@ -95,6 +111,7 @@ class MateriController extends Controller
      */
     public function destroy(Materi $materi)
     {
-        //
+        $materi->delete();
+        return redirect()->route('materi.index')->with('success', 'Data Berhasil Dihapus!');
     }
 }

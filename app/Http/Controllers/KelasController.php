@@ -69,7 +69,7 @@ class KelasController extends Controller
      */
     public function show(Kelas $kelas)
     {
-        //
+        return view('kelas.index', compact('kelas'));
     }
 
     /**
@@ -80,7 +80,7 @@ class KelasController extends Controller
      */
     public function edit(Kelas $kelas)
     {
-        //
+        
     }
 
     /**
@@ -92,7 +92,30 @@ class KelasController extends Controller
      */
     public function update(Request $request, Kelas $kelas)
     {
-        //
+        $this->validate($request, [
+            'nama_kelas'     => 'required',
+            'tingkat'   => 'required',
+            'fakultas' => 'required',
+            'jurusan' => 'required'
+        ]);
+
+        //get data Kelas by ID
+        $kelas = Kelas::findOrFail($kelas->id);
+
+        $kelas ->update([
+            'nama_kelas' => $request->nama_kelas,
+            'tingkat' => $request->tingkat,
+            'fakultas' => $request->fakultas,
+            'jurusan' => $request->jurusan
+        ]);
+
+        if($kelas){
+            //redirect dengan pesan sukses
+            return redirect()->route('kelas.index')->with(['success' => 'Data Berhasil Diupdate!']);
+        }else{
+            //redirect dengan pesan error
+            return redirect()->route('kelas.index')->with(['error' => 'Data Gagal Diupdate!']);
+        }
     }
 
     /**
@@ -103,6 +126,7 @@ class KelasController extends Controller
      */
     public function destroy(Kelas $kelas)
     {
-        //
+        $kelas->delete();
+        return redirect()->route('kelas.index')->with('success', 'Data Berhasil Dihapus!');
     }
 }

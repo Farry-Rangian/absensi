@@ -44,18 +44,16 @@ class HomeController extends Controller
             'teaching_role' => 'required',
             'code' => 'required',
         ]);
-        //jangan lupa buat validasi rentang waktunya lihat di chatgpt yg sudah dibbuat
         
         $user = Auth::user();
         $date = Carbon::now("GMT+7");
         $codes = Code::all();
 
-        // Mencari kode yang sesuai dengan inputan dari permintaan
         $input = $request->input('code');
         $codeMatch = $codes->where('code', $input)->first();
+        // dd($codeMatch->code, $input);
 
-        // Jika kode cocok dan belum digunakan, dapatkan id-nya
-        if ($codeMatch && is_null($codeMatch->id_user_get)) {
+        if ($codeMatch && $codeMatch->code == $input && is_null($codeMatch->id_user_get)) {
                 $codeMatch->id_user_get = $user->id;
                 $code_id = $codeMatch->id;
                 $kelas_id = $request->kelas_id;
@@ -65,23 +63,19 @@ class HomeController extends Controller
                 $tanggal = $date->toDateString();
                 $start = $date->toTimeString();
                 $codeMatch->save();
-            } else {
-                // Code tidak valid: sudah digunakan atau tidak ditemukan
-                return back()->withErrors(['code' => 'Kode absen tidak valid.'])->withInput();
-            }
 
-        $absensi = new Absensi;
-        $absensi->kelas_id = $kelas_id;
-        $absensi->materi_id = $materi_id;
-        $absensi->teaching_role = $teaching_role;
-        $absensi->code_id = $code_id;
-        $absensi->user_id = $user_id;
-        $absensi->date = $tanggal;
-        $absensi->start = $start;
-        $absensi->save();
-        // dd($absensi);
-        return redirect()->back()->with('success', 'Anda berhasil melakukan absensi.');
-        
-
+                $absensi = new Absensi;
+                $absensi->kelas_id = $kelas_id;
+                $absensi->materi_id = $materi_id;
+                $absensi->teaching_role = $teaching_role;
+                $absensi->code_id = $code_id;
+                $absensi->user_id = $user_id;
+                $absensi->date = $tanggal;
+                $absensi->start = $start;
+                $absensi->save();
+                return response()->json(['message' => 'Data berhasil disimpan.']);
+        } else {
+            return response()->json(['message' => 'Terjadi kesalahan saat menyimpan data.'], 400);
+        }
     }
 }
