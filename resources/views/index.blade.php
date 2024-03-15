@@ -107,6 +107,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     Clock in
                                 </button>
+
                                 <hr>
                             </form>
                         </div>
@@ -205,6 +206,8 @@
             success: function(response) {
                 // Jika respons berhasil, tampilkan pesan sukses sebagai alert
                 alert(response.message);
+                // Arahkan pengguna ke route home/show/1 setelah tombol "OK" ditekan
+                window.location.href = "{{ route('home.show', ['id' => 1]) }}"; // Ganti '1' dengan id yang diinginkan
             },
             error: function(xhr, status, error) {
                 // Jika respons gagal, cek pesan error dari respons JSON

@@ -1,118 +1,163 @@
 @extends('app')
 
 @section('content')
-<div class="container-fluid">
-
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Absensi</h1>
-        </div>
-    </div>
-</div>
 <div class="container">
-    <form method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="form-group">
-            <div class="form-group">
-                <label for="id_assisten">ID ASSISTEN : {{ $user->id_assisten }}</label>
-                <input class="form-control" type="text" value="{{ $user->id }}" hidden>
-                @error('code_id')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
-            @error('code_id')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-        <div class="form-group">
-            <select id="kelas_id" class="form-control @error('kelas_id') is-invalid @enderror" name="kelas_id" required>
-                <option value="">Pilih Kelas</option>
-                @foreach($kelas as $kelasItem)
-                    <option value="{{ $kelasItem->id }}">{{ $kelasItem->nama_kelas }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <select id="materi_id" class="form-control @error('materi_id') is-invalid @enderror" name="materi_id" required>
-                <option value="">Pilih materi</option>
-                @foreach($materi as $materiItem)
-                    <option value="{{ $materiItem->id }}">{{ $materiItem->nama_materi }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <select id="teaching_role" class="form-control @error('teaching_role') is-invalid @enderror" name="teaching_role" required autocomplete="teaching_role" autofocus>
-                <option value="" disabled selected>Peran Jaga</option>
-                <option value="Tutor" {{ old('teaching_role') == 'Tutor' ? 'selected' : '' }}>Tutor</option>
-                <option value="Asissten" {{ old('teaching_role') == 'Assisten' ? 'selected' : '' }}>Assisten</option>
-                <option value="Ketua" {{ old('teaching_role') == 'Ketua' ? 'selected' : '' }}>Ketua</option>
-            </select>
-            @error('teaching_role')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-        <div class="form-group">
-            <input id="code" type="text" class="form-control @error('code') is-invalid @enderror" name="code" value="{{ old('code') }}" required autocomplete="code" autofocus placeholder="Masukkan code absen">
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>ID Asisten</th>
+                <th>Nama</th>
+                <th>Join Date</th>
+                <th>Jabatan</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+                <tr>
+                    <td>{{ $user->id_assisten }}</td>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->join_date }}</td>
+                    <td>{{ $user->role }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#editModal{{ $user->id }}">Edit</button>
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal{{ $user->id }}">Hapus</button>
+                    </td>
+                </tr>
+                <div class="modal fade" id="editModal{{ $user->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $user->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel{{ $user->id }}">Form Edit User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ route('user.update', $user->id) }}" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name" autofocus placeholder="Enter name">
+                                        @error('name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email" placeholder="Enter email">
+                                        @error('email')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="id_assisten">ID Assisten</label>
+                                        <input id="id_assisten" type="text" class="form-control @error('id_assisten') is-invalid @enderror" name="id_assisten" value="{{ old('id_assisten', $user->id_assisten) }}" required autocomplete="id_assisten" placeholder="Enter ID Assisten">
+                                        @error('id_assisten')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="join_date">Join Date</label>
+                                        <input id="join_date" type="date" class="form-control @error('join_date') is-invalid @enderror" name="join_date" value="{{ old('join_date', $user->join_date) }}" required autocomplete="join_date" placeholder="Enter Join Date">
+                                        @error('join_date')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="role">Join Date</label>
+                                        <select id="role" class="form-control @error('role') is-invalid @enderror" name="role" required autocomplete="role" autofocus>
+                                            <option value="" disabled selected>Select your role</option>
+                                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="pj" {{ old('role') == 'pj' ? 'selected' : '' }}>PJ</option>
+                                            <option value="asisten" {{ old('role') == 'asisten' ? 'selected' : '' }}>Asisten</option>
+                                        </select>
+                                        @error('role')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">New Password</label>
+                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="new-password" placeholder="Enter new password">
+                                        @error('password')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password_confirmation">Confirm New Password</label>
+                                        <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" autocomplete="new-password" placeholder="Confirm new password">
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        Update
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-            @error('code')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-        <button type="submit" class="btn btn-primary" onclick="tombol()">
-            Submit
-        </button>
-        <hr>
-    </form>
-
+                <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $user->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ $user->id }}">Konfirmasi Hapus</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus Assisten ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                <form action="{{ route('user.delete', $user->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 
-<script type="text/javascript">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
 
-function tombol() {
-    var kelas_id = document.getElementById('kelas_id').value;
-    var materi_id = document.getElementById('materi_id').value;
-    var teaching_role = document.getElementById('teaching_role').value;
-    var code = document.getElementById('code').value;
-
-    // Mengirim permintaan POST menggunakan Axios
-    axios.post("{{ route('absensi.store') }}", {
-            _token: "{{ csrf_token() }}", // Menambahkan nilai kode absen ke dalam payload data
-            kelas_id: kelas_id,
-            materi_id: materi_id,
-            teaching_role: teaching_role,
-            code: code
-        })
-        .then(function(response) {
-            // Menangani respons jika berhasil
-            swal({
-                title: "Berhasil!",
-                text: "Absen berhasil",
-                icon: "success",
-                button: true
-            });
-        })
-        .catch(function(error) {
-            console.error(error);
-            swal({
-                title: "Oops!",
-                text: "Kode Absen Invalid",
-                icon: "error",
-                button: true
-            });
-        });
-    
-}
+<script>
+     new DataTable('#example', {
+    layout: {
+        topStart: {
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+        }
+    }
+});
 </script>
-<!-- /.container-fluid -->
-<div>
-</div>
 @endsection
+
