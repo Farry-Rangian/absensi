@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\AsistenController;
 use App\Http\Controllers\CodeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MateriController;
@@ -20,13 +22,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Auth::routes();
 
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboardassisten', [AsistenController::class, 'index'])->middleware('role:asisten');
+    Route::post('/dashboardassisten', [AsistenController::class, 'store'])->middleware('role:asisten');
+    Route::put('/dashboardassisten', [AsistenController::class, 'update'])->middleware('role:asisten');
+});
+
+
 Route::middleware('auth', 'role:admin')->group(function () {
+    
     Route::post('/materi/create', [App\Http\Controllers\MateriController::class, 'store'])->name('materi.store');
     Route::put('/materi/{materi}', [MateriController::class, 'update'])->name('materi.update');
     Route::delete('/materi/{materi}', [MateriController::class, 'destroy'])->name('materi.delete');
@@ -35,7 +45,6 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::resource('code', CodeController::class);
     Route::resource('kelas', KelasController::class);
     Route::resource('materi', MateriController::class);
-    Route::resource('absensi', AbsensiController::class);
 
 
     Route::resource('user', UserController::class);
@@ -44,8 +53,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
 });
 
 Route::middleware('auth', 'role:admin,pj')->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::post('/home', [App\Http\Controllers\HomeController::class, 'store'])->name('home.store');
-    Route::get('/home/show/{id}', [HomeController::class, 'show'])->name('home.show');
-    Route::put('/home/{id}', [HomeController::class, 'update'])->name('home.update');
+    Route::get('/', [DashboardController::class, 'index']);
+    Route::post('/', [DashboardController::class, 'store']);
+    Route::put('/', [DashboardController::class, 'update']);
 });

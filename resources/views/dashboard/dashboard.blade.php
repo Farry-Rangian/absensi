@@ -1,24 +1,13 @@
 @extends('app')
 
 @section('content')
-<div class="container-fluid">
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-    </div>
-</div>
 <div class="container">
     <div class="row pb-3">
         <div class="col">
             <div class="card">
                 <div class="card-header">
                     <h1 class="card-title">Selamat Datang {{ $user->name }}</h1>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                    document.getElementById('logout-form').submit();">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        {{ __('Logout') }}
-                    </a>
                 </div>
                 <div class="digital_clock_wrapper p-3">
                     <div id="digit_clock_time" class="h2 text-center"></div>
@@ -47,8 +36,27 @@
                         <div class="card-header">
                             <h5 class="card-title">Form Absensi</h5>
                         </div>
+                        @if (session('success'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        
+                        @if (session('error'))
+                            <div class="alert alert-danger" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                         <div class="container">
-                            <form method="POST" id="formAbsensi" action="{{ route('home.store') }}" enctype="multipart/form-data">
+                            @if ($absen)
+                            <form action="/" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="absensi_id" value="{{ $absen->id }}">
+                                <button type="submit" class="btn btn-danger">Check-out</button>
+                            </form>
+                            @else
+                            <form action="/" method="POST">
                                 @csrf
                                 <div class="form-group">
                                     <div class="form-group">
@@ -104,29 +112,22 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary">
-                                    Clock in
-                                </button>
-
-                                <hr>
+                                <div class="alert alert-info">
+                                    <p>*Tanyakan kode pada assisten lainnya</p>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Check-in</button>
+                                </div>
                             </form>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript">
-    // Memanggil currentTime() saat halaman dimuat
-    $(document).ready(function() {
-        currentTime();
-    });
-
-    function tombolSatu() {
+    <script>
+        function tombolSatu() {
         // Panggil AJAX untuk menyimpan code ke database
         $.ajax({
             type: "POST",
@@ -154,7 +155,7 @@
         });
     }
 
-    function currentTime() {
+        function currentTime() {
         var date = new Date(); /* creating object of Date class */
         var hour = date.getHours();
         var min = date.getMinutes();
@@ -188,42 +189,7 @@
             return k;
         }
     }
-
-    $(document).ready(function() {
-    // Memanggil currentTime() saat halaman dimuat
-    currentTime();
-
-    // Menangani submit form saat tombol "Clock in" ditekan
-    $('#formAbsensi').submit(function(event) {
-        // Mencegah aksi default form (pengiriman form langsung)
-        event.preventDefault();
-
-        // Lakukan AJAX untuk menyimpan data absensi ke database
-        $.ajax({
-            url: "{{ route('home.store') }}",
-            type: 'POST',
-            data: $(this).serialize(), // Menggunakan serialize untuk mengambil data formulir
-            success: function(response) {
-                // Jika respons berhasil, tampilkan pesan sukses sebagai alert
-                alert(response.message);
-                // Arahkan pengguna ke route home/show/1 setelah tombol "OK" ditekan
-                window.location.href = "{{ route('home.show', ['id' => 1]) }}"; // Ganti '1' dengan id yang diinginkan
-            },
-            error: function(xhr, status, error) {
-                // Jika respons gagal, cek pesan error dari respons JSON
-                var jsonResponse = xhr.responseJSON;
-                if (jsonResponse && jsonResponse.message) {
-                    // Jika pesan error tersedia dalam respons JSON, gunakan pesan tersebut
-                    alert('Error - ' + jsonResponse.message);
-                } else {
-                    // Jika tidak ada pesan error yang tersedia, tampilkan pesan default
-                    var errorMessage = xhr.status + ': ' + xhr.statusText;
-                    alert('Error - ' + errorMessage);
-                }
-            }
-        });
-    });
-});
 </script>
+</div>
 
 @endsection

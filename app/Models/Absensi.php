@@ -25,4 +25,19 @@ class Absensi extends Model
     {
         return $this->hasOne(Code::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
+
+    public function materi()
+    {
+        return $this->belongsTo(Materi::class);
+    }
 }

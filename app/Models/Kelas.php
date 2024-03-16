@@ -12,4 +12,10 @@ class Kelas extends Model
     protected $fillable = [
         'nama_kelas', 'tingkat', 'fakultas', 'jurusan'
     ];
+
+
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class);
+    }
 }
