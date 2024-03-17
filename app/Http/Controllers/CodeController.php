@@ -27,7 +27,7 @@ class CodeController extends Controller
      */
     public function create()
     {
-        return view('code.create');
+        //
     }
 
     /**
