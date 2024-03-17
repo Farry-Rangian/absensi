@@ -38,22 +38,29 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth', 'role:admin')->group(function () {
     
+    //MATERI
     Route::post('/materi/create', [App\Http\Controllers\MateriController::class, 'store'])->name('materi.store');
     Route::put('/materi/{materi}', [MateriController::class, 'update'])->name('materi.update');
     Route::delete('/materi/{materi}', [MateriController::class, 'destroy'])->name('materi.delete');
-    Route::put('/kelas/{kelas}', [KelasController::class, 'update'])->name('kelas.update');
-    Route::delete('/kelas/{kelas}', [KelasController::class, 'destroy'])->name('kelas.delete');
-    
-    Route::resource('kelas', KelasController::class);
     Route::resource('materi', MateriController::class);
 
+    //KELAS
+    Route::put('/kelas/{kelas}', [KelasController::class, 'update'])->name('kelas.update');
+    Route::delete('/kelas/{kelas}', [KelasController::class, 'destroy'])->name('kelas.delete');
+    Route::resource('kelas', KelasController::class);
+    
+    //ABSENSI
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
 
+    //USER
     Route::resource('user', UserController::class);
     Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.delete');
+
 });
 
 Route::middleware('auth', 'role:admin,pj')->group(function () {
+
+    //CODE
     Route::resource('code', CodeController::class);
 });

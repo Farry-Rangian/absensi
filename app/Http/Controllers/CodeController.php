@@ -16,7 +16,8 @@ class CodeController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard');
+        $codes = Code::latest()->get();
+        return view('code.index', compact('codes'));
     }
 
     /**
