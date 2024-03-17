@@ -29,9 +29,9 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboardassisten', [AsistenController::class, 'index'])->middleware('role:asisten');
-    Route::post('/dashboardassisten', [AsistenController::class, 'store'])->middleware('role:asisten');
-    Route::put('/dashboardassisten', [AsistenController::class, 'update'])->middleware('role:asisten');
+    Route::get('/', [DashboardController::class, 'index']);
+    Route::post('/', [DashboardController::class, 'store']);
+    Route::put('/', [DashboardController::class, 'update']);
 });
 
 
@@ -42,7 +42,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::delete('/materi/{materi}', [MateriController::class, 'destroy'])->name('materi.delete');
     Route::put('/kelas/{kelas}', [KelasController::class, 'update'])->name('kelas.update');
     Route::delete('/kelas/{kelas}', [KelasController::class, 'destroy'])->name('kelas.delete');
-    Route::resource('code', CodeController::class);
+    
     Route::resource('kelas', KelasController::class);
     Route::resource('materi', MateriController::class);
 
@@ -53,7 +53,5 @@ Route::middleware('auth', 'role:admin')->group(function () {
 });
 
 Route::middleware('auth', 'role:admin,pj')->group(function () {
-    Route::get('/', [DashboardController::class, 'index']);
-    Route::post('/', [DashboardController::class, 'store']);
-    Route::put('/', [DashboardController::class, 'update']);
+    Route::resource('code', CodeController::class);
 });

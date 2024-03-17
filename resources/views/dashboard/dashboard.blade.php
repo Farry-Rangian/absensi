@@ -17,6 +17,7 @@
         </div>
     </div>
     <div class="row">
+        @if (auth()->user()->role == 'admin' || auth()->user()->role == 'pj')
         <div class="col">
             <div class="card">
                 <div class="card-body ">
@@ -29,6 +30,7 @@
                 </div>
             </div>
         </div>
+        @endif
         <div class="col">
             <div class="card">
                 <div class="card">
@@ -126,6 +128,7 @@
             </div>
         </div>
     </div>
+    
     <script>
         function tombolSatu() {
         // Panggil AJAX untuk menyimpan code ke database
@@ -189,6 +192,10 @@
             return k;
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        currentTime();
+    });
 </script>
 </div>
 
