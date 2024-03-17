@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     Route::post('/', [DashboardController::class, 'store']);
     Route::put('/', [DashboardController::class, 'update']);
+    Route::get('/riwayat-absensi', [AbsensiController::class, 'riwayat'])->name('absensi.riwayat');
 });
 
 
@@ -46,6 +47,7 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::resource('kelas', KelasController::class);
     Route::resource('materi', MateriController::class);
 
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
 
     Route::resource('user', UserController::class);
     Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
